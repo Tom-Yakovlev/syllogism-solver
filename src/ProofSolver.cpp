@@ -1,32 +1,3 @@
-#include "ProofSolver.h"
-#include "Utils.h"
-#include "Rules.h"
-#include <iostream>
-#include <sstream>
-#include <unordered_set>
-
-void ProofSolver::readInput() {
-    std::string input;
-
-    std::cout << "\nEnter premises separated by commas:\n";
-    std::getline(std::cin, input);
-
-    std::stringstream ss(input);
-    std::string item;
-    premises.clear();  // Clear any leftover premises
-    while (std::getline(ss, item, ',')) {
-        premises.push_back(normalizeConnectives(trim(item)));
-    }
-
-    std::cout << "Enter the conclusion:\n";
-    std::getline(std::cin, conclusion);
-    conclusion = normalizeConnectives(trim(conclusion));
-}
-
-void ProofSolver::addRule(const Rule& rule) {
-    rules.push_back(rule);
-}
-
 // In ProofSolver.cpp
 #include "ProofSolver.h"
 #include "Utils.h"
@@ -121,6 +92,27 @@ int ProofSolver::getLineNumberFor(const std::string& expr) const {
     return -1;
 }
 
+void ProofSolver::readInput() {
+    std::string input;
+
+    std::cout << "\nEnter premises separated by commas:\n";
+    std::getline(std::cin, input);
+
+    std::stringstream ss(input);
+    std::string item;
+    premises.clear();  // Clear any leftover premises
+    while (std::getline(ss, item, ',')) {
+        premises.push_back(normalizeConnectives(trim(item)));
+    }
+
+    std::cout << "Enter the conclusion:\n";
+    std::getline(std::cin, conclusion);
+    conclusion = normalizeConnectives(trim(conclusion));
+}
+
+void ProofSolver::addRule(const Rule& rule) {
+    rules.push_back(rule);
+}
 
 std::vector<std::vector<std::string>> ProofSolver::guessPremisesFor(const Rule& rule, const std::string& goal) {
     std::vector<std::vector<std::string>> guesses;
@@ -219,7 +211,6 @@ std::vector<std::vector<std::string>> ProofSolver::guessPremisesFor(const Rule& 
     return guesses;
 }
 
-// === Replace your solve() with this ===
 void ProofSolver::solve() {
     rules = getAllRules();
     proofLines.clear();
