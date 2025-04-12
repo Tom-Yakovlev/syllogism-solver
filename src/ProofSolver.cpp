@@ -53,7 +53,7 @@ void ProofSolver::solve() {
         }
     }
 
-    std::cout << "[Running fallback rule application...]\n";
+    std::cout << "\n[DEBUG] Running fallback rule application\n";
 
     bool progress = true;
     std::unordered_set<std::string> seen;
@@ -118,7 +118,7 @@ void ProofSolver::solve() {
                         std::cout << "[INFO] Derived " << derivationCount << " formulas...\n";
                     }
 
-                    std::cout << "[DEBUG] Derived: " << trimmedResult << "    :" << rule.name << "\n";
+                    std::cout << "[DEBUG] Derived: " << trimmedResult << "    :" << rule.name << "\n\n";
 
                     std::vector<int> refs;
                     for (int idx : combo)

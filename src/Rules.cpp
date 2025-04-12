@@ -664,6 +664,8 @@ std::vector<Rule> getAllRules() {
         makeADD(),
         makeBC(),
         makeCB(),
+
+        /*
         makeD_HS(),
         makeD_MCC(),
         makeD_MCNA(),
@@ -678,5 +680,6 @@ std::vector<Rule> getAllRules() {
         makeD_SDMT(),
         makeD_PBC(),
         makeD_NC()
+        */
     };
 }
