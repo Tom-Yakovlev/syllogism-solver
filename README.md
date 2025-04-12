@@ -13,18 +13,6 @@ A modular C++ engine for constructing step-by-step logical proofs using proposit
 - Cleanly modularized for extensibility
 - Input-based proof loop with terminal UI
 
-## 🧱 Project Structure
-.
-├── CMakeLists.txt
-├── README.md
-└── src
-    ├── main.cpp
-    ├── ProofSolver.cpp
-    ├── ProofSolver.h
-    ├── Rules.cpp
-    ├── Rules.h
-    └── Utils.h
-
 ## 🚀 Getting Started
 ### 🔧 Build Instructions
 1. Make sure you have a C++17 compiler and CMake 3.10+
