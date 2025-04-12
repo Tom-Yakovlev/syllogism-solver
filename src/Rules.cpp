@@ -189,7 +189,7 @@ Rule makeBC() {
 
             if ((antecedent == lhs && consequent == rhs) ||
                 (antecedent == rhs && consequent == lhs)) {
-                return normalizeConnectives(antecedent + "->" + consequent);
+                return normalizeConnectives(trim(antecedent + "->" + consequent));
             }
 
             return std::nullopt;
