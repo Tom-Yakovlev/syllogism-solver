@@ -9,8 +9,8 @@ Rule makeMP() {
         "MP",
         2,
         [](const std::vector<std::string>& premises) -> std::optional<std::string> {
-            std::string a = trim(premises[0]);
-            std::string b = trim(premises[1]);
+            std::string a = normalizeConnectives(trim(premises[0]));
+            std::string b = normalizeConnectives(trim(premises[1]));
 
             // Try both combinations
             auto tryMP = [&](const std::string& phi, const std::string& implication) -> std::optional<std::string> {
@@ -35,8 +35,8 @@ Rule makeMT() {
         "MT",
         2,
         [](const std::vector<std::string>& premises) -> std::optional<std::string> {
-            std::string a = trim(premises[0]);
-            std::string b = trim(premises[1]);
+            std::string a = normalizeConnectives(trim(premises[0]));
+            std::string b = normalizeConnectives(trim(premises[1]));
 
             auto tryMT = [&](const std::string& notPsi, const std::string& imp) -> std::optional<std::string> {
                 if (notPsi.rfind("~", 0) == 0) {
@@ -61,7 +61,7 @@ Rule makeDNE() {
         "DNE",
         1,
         [](const std::vector<std::string>& premises) -> std::optional<std::string> {
-            std::string expr = trim(premises[0]);
+            std::string expr = normalizeConnectives(trim(premises[0]));
 
             if (expr.rfind("~~", 0) == 0) {
                 return trim(expr.substr(2)); // remove the two leading negations
@@ -77,7 +77,7 @@ Rule makeDNI() {
         "DNI",
         1,
         [](const std::vector<std::string>& premises) -> std::optional<std::string> {
-            std::string expr = trim(premises[0]);
+            std::string expr = normalizeConnectives(trim(premises[0]));
             return "~~" + expr;
         }
     };
@@ -88,7 +88,7 @@ Rule makeS() {
         "S",
         1,
         [](const std::vector<std::string>& premises) -> std::optional<std::string> {
-            std::string expr = trim(premises[0]);
+            std::string expr = normalizeConnectives(trim(premises[0]));
 
             size_t andPos = expr.find("^");
             if (andPos != std::string::npos) {
@@ -112,8 +112,8 @@ Rule makeADJ() {
         [](const std::vector<std::string>& premises) -> std::optional<std::string> {
             if (premises.size() != 2) return std::nullopt;
 
-            std::string a = trim(premises[0]);
-            std::string b = trim(premises[1]);
+            std::string a = normalizeConnectives(trim(premises[0]));
+            std::string b = normalizeConnectives(trim(premises[1]));
 
             if (a == b) return std::nullopt; // Don't introduce redundancy like "P∧P"
 
@@ -127,14 +127,14 @@ Rule makeMTP() {
         "MTP",
         2,
         [](const std::vector<std::string>& premises) -> std::optional<std::string> {
-            std::string a = trim(premises[0]);
-            std::string b = trim(premises[1]);
+            std::string a = normalizeConnectives(trim(premises[0]));
+            std::string b = normalizeConnectives(trim(premises[1]));
 
             auto tryMTP = [](const std::string& disj, const std::string& negated) -> std::optional<std::string> {
-                if (disj.find("|") == std::string::npos || negated.rfind("~", 0) != 0)
+                if (disj.find("v") == std::string::npos || negated.rfind("~", 0) != 0)
                     return std::nullopt;
 
-                size_t barPos = disj.find("|");
+                size_t barPos = disj.find("v");
                 std::string left = trim(disj.substr(0, barPos));
                 std::string right = trim(disj.substr(barPos + 1));
                 std::string negTerm = trim(negated.substr(1));  // remove ~
@@ -158,13 +158,8 @@ Rule makeADD() {
         "ADD",
         1,
         [](const std::vector<std::string>& premises) -> std::optional<std::string> {
-            std::string expr = trim(premises[0]);
-
-            // We can't infer what ψ is, so we only support ADD for generating disjunctions
-            // like φ ∨ ψ, where φ is known and ψ is arbitrary.
-            // For simplicity, just add a fixed placeholder for the second disjunct.
-
-            return expr + "|" + "ψ";  // You can later modify this to allow ψ to be any symbol if user input or chaining is supported.
+            std::string expr = normalizeConnectives(trim(premises[0]));
+            return expr + "v" + "ψ";
         }
     };
 }
@@ -176,8 +171,9 @@ Rule makeBC() {
         [](const std::vector<std::string>& premises) -> std::optional<std::string> {
             if (premises.size() != 2) return std::nullopt;
 
-            std::string biconditional = trim(premises[0]);
-            std::string implication = trim(premises[1]);
+            std::string biconditional = normalizeConnectives(trim(premises[0]));
+            std::string implication   = normalizeConnectives(trim(premises[1]));
+
 
             size_t bicondPos = biconditional.find("<->");
             size_t implPos = implication.find("->");
@@ -193,7 +189,7 @@ Rule makeBC() {
 
             if ((antecedent == lhs && consequent == rhs) ||
                 (antecedent == rhs && consequent == lhs)) {
-                return implication;
+                return normalizeConnectives(antecedent + "->" + consequent);
             }
 
             return std::nullopt;
@@ -208,8 +204,9 @@ Rule makeCB() {
         [](const std::vector<std::string>& premises) -> std::optional<std::string> {
             if (premises.size() != 2) return std::nullopt;
 
-            auto imp1 = splitImplication(premises[0]);
-            auto imp2 = splitImplication(premises[1]);
+            auto imp1 = splitImplication(normalizeConnectives(trim(premises[0])));
+            auto imp2 = splitImplication(normalizeConnectives(trim(premises[1])));
+
 
             if (!imp1 || !imp2) return std::nullopt;
 
@@ -274,7 +271,7 @@ Rule makeD_MCNA() {
         "D-MCNA",
         1,
         [](const std::vector<std::string>& premises) -> std::optional<std::string> {
-            std::string not_phi = trim(premises[0]);
+            std::string not_phi = normalizeConnectives(trim(premises[0]));
 
             if (not_phi.rfind("~", 0) != 0) return std::nullopt;
 
@@ -293,7 +290,7 @@ Rule makeD_CPO() {
         "D-CPO",
         1,
         [](const std::vector<std::string>& premises) -> std::optional<std::string> {
-            std::string implication = trim(premises[0]);
+            std::string implication = normalizeConnectives(trim(premises[0]));
 
             auto maybe = splitImplication(implication);
             if (!maybe) return std::nullopt;
@@ -313,7 +310,7 @@ Rule makeD_CPT() {
         "D-CPT",
         1,
         [](const std::vector<std::string>& premises) -> std::optional<std::string> {
-            std::string implication = trim(premises[0]);
+            std::string implication = normalizeConnectives(trim(premises[0]));
 
             auto maybe = splitImplication(implication);
             if (!maybe) return std::nullopt;
@@ -376,7 +373,7 @@ Rule makeD_CM() {
         "D-CM",
         1,
         [](const std::vector<std::string>& premises) -> std::optional<std::string> {
-            std::string imp = trim(premises[0]);
+            std::string imp = normalizeConnectives(trim(premises[0]));
             auto maybe = splitImplication(imp);
             if (!maybe) return std::nullopt;
 

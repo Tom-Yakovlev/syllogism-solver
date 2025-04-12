@@ -43,7 +43,7 @@ int main() {
     std::cout << "[S] "; runTest("P^Q", "P", "P    :S 2");
     std::cout << "[ADJ] "; runTest("P,Q", "P^Q", "P^Q    :ADJ 2 3");
     std::cout << "[ADD] "; runTest("P", "Pvψ", "Pvψ    :ADD 2");
-    std::cout << "[BC] "; runTest("P<->Q,P->Q", "P->Q", "P->Q    :BC 2 3");
+    std::cout << "[BC] "; runTest("P<->Q,Q->P", "P->Q", "P->Q    :BC 2 3");
     std::cout << "[CB] "; runTest("P->Q,Q->P", "P<->Q", "P<->Q    :CB 2 3");
 
     std::cout << "\n=== Derived Rules ===\n";
@@ -65,6 +65,16 @@ int main() {
 
     std::cout << "\n=== Composite Proof ===\n";
     std::cout << "[D-PBC] "; runTest("P->R,PvQ,Q->R", "R", "R    :D-PBC 2 3 4");
+
+    std::cout << "\n=== Reverse Direction & Inference Tests ===\n";
+    std::cout << "[BC Reverse] "; runTest("P<->Q,Q->P", "P->Q", "P->Q    :BC 2 3");
+    std::cout << "[CB Reverse] "; runTest("Q->P,P->Q", "P<->Q", "P<->Q    :CB 2 3");
+    std::cout << "[D-CPO Reverse] "; runTest("~Q->~P", "P->Q", "P->Q    :D-CPO 2");
+    std::cout << "[D-CPT Reverse] "; runTest("Q->P", "~P->~Q", "~P->~Q    :D-CPT 2");
+    std::cout << "[D-DIL Reverse] "; runTest("P->Q,~P->Q", "Q", "Q    :D-DIL 2 3");
+    std::cout << "[D-NC Reverse] "; runTest("(P^~Q)<->~(P->Q)", "~(P->Q)<->(P^~Q)", "~(P->Q)<->(P^~Q)    :D-NC 2");
+
+
 
     std::cout << "\nAll tests passed.\n";
     return 0;
